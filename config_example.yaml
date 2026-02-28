@@ -34,6 +34,11 @@ alphaflow:
   # Leave commented out to use default "INVOICE" value
   # invoice_type_value: "1662017700993"
 
+  # Workflow name to start after successful invoice creation (optional)
+  # Example: "alphaflow_Ausgangsrechnung"
+  # Leave commented out to skip workflow start
+  workflow_name: "alphaflow_Ausgangsrechnung"
+
   # Document generation configuration
   document_generation:
     doc_template: "609bb93bd152c934f2d7a0b3"  # Test system template ID

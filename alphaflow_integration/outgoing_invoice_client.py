@@ -681,6 +681,46 @@ class OutgoingInvoiceClient:
                 error_message=error_msg
             )
 
+    def start_workflow(self, invoice_id: str, workflow_name: str) -> bool:
+        """
+        Startet den Bearbeitungsworkflow für eine Ausgangsrechnung.
+
+        Args:
+            invoice_id: _id der erstellten Ausgangsrechnung
+            workflow_name: Name des zu startenden Workflows (z.B. "alphaflow_Ausgangsrechnung")
+
+        Returns:
+            True bei Erfolg, False bei Fehler
+        """
+        try:
+            endpoint = (
+                f"alphaflow-outgoinginvoice/workflowservice/"
+                f"workflowinstance_outgoinginvoice/workflow/start/{workflow_name}"
+            )
+            params = {'reference': invoice_id}
+
+            self.logger.info(f"Starte Workflow '{workflow_name}' für Rechnung {invoice_id}")
+
+            response = self.dvelop_client.service_client.execute_authenticated_request(
+                method='GET',
+                endpoint=endpoint,
+                parameters=params
+            )
+
+            if response and response.status_code in [200, 201, 202, 204]:
+                self.logger.info(f"✅ Workflow '{workflow_name}' erfolgreich gestartet")
+                return True
+            else:
+                status = response.status_code if response else 'keine Antwort'
+                self.logger.error(f"❌ Workflow-Start fehlgeschlagen: HTTP {status}")
+                if response:
+                    self.logger.debug(f"Response body: {response.text[:200]}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"❌ Fehler beim Starten des Workflows '{workflow_name}': {str(e)}")
+            return False
+
     def join_documents(
         self,
         invoice_id: str,

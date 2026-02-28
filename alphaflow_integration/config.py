@@ -42,6 +42,9 @@ class AlphaflowConfig:
     # Invoice type value (system-specific)
     invoice_type_value: Optional[str] = None
 
+    # Workflow name to start after invoice creation (optional)
+    workflow_name: Optional[str] = None
+
     # Blacklist für interne/nicht-abrechenbare Projekte
     project_blacklist: List[str] = None
 

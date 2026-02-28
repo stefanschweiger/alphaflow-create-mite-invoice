@@ -72,6 +72,7 @@ class AlphaflowConfigModel(BaseModel):
     default_currency: str = Field(default="EUR")
     default_trading_partner_id: str = Field(..., min_length=1)
     invoice_type_value: Optional[str] = Field(default=None)
+    workflow_name: Optional[str] = Field(default=None)
 
     document_generation: Optional[DocumentGenerationConfigModel] = Field(default_factory=DocumentGenerationConfigModel)
 
@@ -211,6 +212,7 @@ def create_alphaflow_config(
         default_currency=af_config.default_currency,
         default_trading_partner_id=trading_partner_id,
         invoice_type_value=af_config.invoice_type_value,
+        workflow_name=af_config.workflow_name,
         document_generation=doc_gen_config
     )
 
@@ -840,6 +842,24 @@ def create(
                 console.print(f"\n[yellow]⚠ Some time entries could not be locked ({lock_result['failed']} failed)[/yellow]")
             else:
                 console.print(f"\n[yellow]⚠ No time entries were locked[/yellow]")
+
+            # ================================================================
+            # 13. Workflow starten (falls konfiguriert)
+            # ================================================================
+
+            if alphaflow_config.workflow_name and invoice_id != 'N/A':
+                console.print(f"\n[cyan]Starting workflow '{alphaflow_config.workflow_name}'...[/cyan]")
+
+                workflow_started = invoice_client.start_workflow(
+                    invoice_id=invoice_id,
+                    workflow_name=alphaflow_config.workflow_name
+                )
+
+                if workflow_started:
+                    console.print(f"[green]✓ Workflow '{alphaflow_config.workflow_name}' started successfully[/green]")
+                else:
+                    console.print(f"[yellow]⚠ Workflow '{alphaflow_config.workflow_name}' could not be started[/yellow]")
+                    console.print(f"[yellow]ℹ Invoice was created and time entries were locked successfully[/yellow]")
 
         except Exception as e:
             console.print(f"[red]✗ Failed to create invoice:[/red] {e}")
