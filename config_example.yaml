@@ -39,6 +39,12 @@ alphaflow:
   # Leave commented out to skip workflow start
   workflow_name: "alphaflow_Ausgangsrechnung"
 
+  # Control flow ID to forward the workflow 2 seconds after it was started (optional)
+  # This is the BPMN sequence flow ID (e.g. "Flow_0tuv578") visible in the forward URL:
+  #   .../workflow/forward/{workflow_instance_id}/{flow_id}
+  # Leave commented out to skip automatic forwarding
+  workflow_forward_flow_id: "Flow_0tuv578"
+
   # Document generation configuration
   document_generation:
     doc_template: "609bb93bd152c934f2d7a0b3"  # Test system template ID

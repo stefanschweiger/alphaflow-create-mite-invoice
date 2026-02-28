@@ -45,6 +45,10 @@ class AlphaflowConfig:
     # Workflow name to start after invoice creation (optional)
     workflow_name: Optional[str] = None
 
+    # Control flow ID to forward the workflow after start (optional)
+    # E.g. "Flow_0tuv578" - the BPMN sequence flow ID in the workflow
+    workflow_forward_flow_id: Optional[str] = None
+
     # Blacklist für interne/nicht-abrechenbare Projekte
     project_blacklist: List[str] = None
 

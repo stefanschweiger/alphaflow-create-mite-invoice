@@ -8,6 +8,7 @@ CLI-Programm zum Erstellen von Alphaflow-Rechnungen aus mite Zeiteinträgen.
 import os
 import sys
 import re
+import time
 import logging
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -73,6 +74,7 @@ class AlphaflowConfigModel(BaseModel):
     default_trading_partner_id: str = Field(..., min_length=1)
     invoice_type_value: Optional[str] = Field(default=None)
     workflow_name: Optional[str] = Field(default=None)
+    workflow_forward_flow_id: Optional[str] = Field(default=None)
 
     document_generation: Optional[DocumentGenerationConfigModel] = Field(default_factory=DocumentGenerationConfigModel)
 
@@ -213,6 +215,7 @@ def create_alphaflow_config(
         default_trading_partner_id=trading_partner_id,
         invoice_type_value=af_config.invoice_type_value,
         workflow_name=af_config.workflow_name,
+        workflow_forward_flow_id=af_config.workflow_forward_flow_id,
         document_generation=doc_gen_config
     )
 
@@ -857,6 +860,34 @@ def create(
 
                 if workflow_started:
                     console.print(f"[green]✓ Workflow '{alphaflow_config.workflow_name}' started successfully[/green]")
+
+                    # Workflow weiterleiten, falls konfiguriert
+                    if alphaflow_config.workflow_forward_flow_id:
+                        console.print(
+                            f"\n[cyan]Forwarding workflow via flow "
+                            f"'{alphaflow_config.workflow_forward_flow_id}' "
+                            f"(waiting 2s)...[/cyan]"
+                        )
+                        time.sleep(2)
+
+                        forward_ok = invoice_client.forward_workflow(
+                            invoice_id=invoice_id,
+                            flow_id=alphaflow_config.workflow_forward_flow_id
+                        )
+
+                        if forward_ok:
+                            console.print(
+                                f"[green]✓ Workflow forwarded successfully "
+                                f"(flow: {alphaflow_config.workflow_forward_flow_id})[/green]"
+                            )
+                        else:
+                            console.print(
+                                f"[yellow]⚠ Workflow forwarding failed "
+                                f"(flow: {alphaflow_config.workflow_forward_flow_id})[/yellow]"
+                            )
+                            console.print(
+                                f"[yellow]ℹ Invoice and workflow were created successfully[/yellow]"
+                            )
                 else:
                     console.print(f"[yellow]⚠ Workflow '{alphaflow_config.workflow_name}' could not be started[/yellow]")
                     console.print(f"[yellow]ℹ Invoice was created and time entries were locked successfully[/yellow]")

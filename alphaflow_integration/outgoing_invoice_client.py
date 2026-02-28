@@ -721,6 +721,63 @@ class OutgoingInvoiceClient:
             self.logger.error(f"❌ Fehler beim Starten des Workflows '{workflow_name}': {str(e)}")
             return False
 
+    def forward_workflow(self, invoice_id: str, flow_id: str) -> bool:
+        """
+        Leitet den Workflow einer Ausgangsrechnung über einen bestimmten Kontrollfluss weiter.
+
+        Ruft dazu zunächst die Rechnung ab, um die Workflow-Instanz-ID aus dem
+        Attribut 'workflow' zu ermitteln, und sendet dann den Forward-Request.
+
+        Args:
+            invoice_id: _id der erstellten Ausgangsrechnung
+            flow_id: ID des Kontrollflusses im Workflow (z.B. "Flow_0tuv578")
+
+        Returns:
+            True bei Erfolg, False bei Fehler
+        """
+        try:
+            # Rechnung abrufen, um Workflow-Instanz-ID zu ermitteln
+            invoice = self.get_invoice(invoice_id)
+            if not invoice:
+                self.logger.error(f"❌ Rechnung {invoice_id} konnte nicht abgerufen werden")
+                return False
+
+            workflow_instance_id = invoice.get('workflow')
+            if not workflow_instance_id:
+                self.logger.error(
+                    f"❌ Kein Workflow-Instanz-Attribut in Rechnung {invoice_id} gefunden"
+                )
+                return False
+
+            endpoint = (
+                f"alphaflow-outgoinginvoice/workflowservice/"
+                f"workflowinstance_outgoinginvoice/workflow/forward/"
+                f"{workflow_instance_id}/{flow_id}"
+            )
+
+            self.logger.info(
+                f"Leite Workflow {workflow_instance_id} über Flow '{flow_id}' weiter"
+            )
+
+            response = self.dvelop_client.service_client.execute_authenticated_request(
+                method='GET',
+                endpoint=endpoint
+            )
+
+            if response and response.status_code in [200, 201, 202, 204]:
+                self.logger.info(f"✅ Workflow-Weiterleitung erfolgreich")
+                return True
+            else:
+                status = response.status_code if response else 'keine Antwort'
+                self.logger.error(f"❌ Workflow-Weiterleitung fehlgeschlagen: HTTP {status}")
+                if response:
+                    self.logger.debug(f"Response body: {response.text[:200]}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"❌ Fehler bei Workflow-Weiterleitung: {str(e)}")
+            return False
+
     def join_documents(
         self,
         invoice_id: str,
