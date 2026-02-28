@@ -1,0 +1,8 @@
+#!/bin/bash
+# Wrapper script for mite-invoice CLI
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Execute the CLI with the virtual environment's Python
+"$SCRIPT_DIR/venv/bin/python" "$SCRIPT_DIR/create_invoice.py" "$@"

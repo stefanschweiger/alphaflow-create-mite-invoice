@@ -1,0 +1,49 @@
+# Mite API Konfiguration
+mite:
+  # Your mite account name (e.g., "alphaflow" for alphaflow.mite.de)
+  account: "alphaflow"
+
+  # API key from environment variable - get it from https://YOUR_ACCOUNT.mite.de/myself
+  api_key: "3dbe366ca1e36a1"
+
+# d.velop Cloud / Alphaflow Konfiguration
+alphaflow:
+  # Base URL of your d.velop Cloud instance
+  dvelop_base_url: "https://alphaflow-test.d-velop.cloud"
+
+  # API key from environment variable - contact your administrator
+  dvelop_api_key: "5a0sUwoprpGOAkFUbwy0/AUuKDlmcpZCMaEFBDrOVW5y8nUwx5XrOkFNXK3XtQEmmiRye34lrqgcVkZF8tKtI/WiOgzDljk5J3ulxIydRkU=&_z_A0V5ayCQ4dR3hH9gNwIU_sM7iYcHR09DmJ8vgpxNBVNDi2e8p0xZFyjhl2UxSsVO_HNosHL1Ixzo3BlMbvi3jUG74NEd0"
+
+  # Organization ID in Alphaflow (required)
+  organization_id: "5f3a530a83809e7e377788a5"
+
+  # Responsible administrator ID in Alphaflow (required)
+  responsible_administrator_id: "78728E3E-4025-4B19-B969-74C64E459A40"
+
+  # Default values for invoices
+  default_hourly_rate: 195.0  # EUR per hour
+  default_vat_rate: 19.0       # VAT percentage
+  default_due_days: 30         # Payment due in X days
+  default_currency: "EUR"      # Currency code
+
+  # Default Trading Partner ID
+  # This is used when no --trading-partner-id or --trading-partner-number is specified
+  default_trading_partner_id: "5f438d2fc40da20fc4efc338"
+
+  # Invoice type value (optional, system-specific identifier for invoice type)
+  # Leave commented out to use default "INVOICE" value
+  # invoice_type_value: "1662017700993"
+
+  # Document generation configuration
+  document_generation:
+    doc_template: "609bb93bd152c934f2d7a0b3"  # Test system template ID
+    category: "62456b6cfb9b51283472ed35"      # Test system category ID for invoice documents
+    attachment_category: "62456b7ffb9b51283472ed36"  # Test system category ID for attachments
+    document_join_type: "62456b6cfb9b51283472ed35"  # Test system document type for joined documents
+    type: "PDF"
+    store_to_dms: true
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
